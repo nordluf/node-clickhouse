@@ -1,3 +1,4 @@
+var fs     = require ('fs');
 var util   = require ('util');
 var Duplex = require ('stream').Duplex;
 
@@ -104,6 +105,7 @@ function RecordStream (options) {
 
 	this._writeBuffer = [];
 	this._canWrite = false;
+      this._count = -1;
 
 	Object.defineProperty (this, 'req', {
 		get: function () {return this._req},
@@ -124,7 +126,7 @@ RecordStream.prototype._read = function read () {
 // TODO: implement _writev
 
 RecordStream.prototype._write = function _write (chunk, enc, cb) {
-
+      this._count++;
 	if (!Buffer.isBuffer (chunk) && typeof chunk !== 'string')
 		chunk = encodeRow (chunk, this.format);
 
@@ -143,6 +145,7 @@ RecordStream.prototype._write = function _write (chunk, enc, cb) {
 	// node stores further write requests into `_writableState.bufferedRequest` chain
 	// until cb is called.
 	this._canWrite = this.req.write (chunk, cb);
+	process.env.DOFS && fs.writeFileSync(process.env.DOFS + '/' + this._count + '.line', chunk.toString());
 
 };
 

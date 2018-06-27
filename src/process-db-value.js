@@ -61,8 +61,12 @@ var ALIASES = {
 }
 
 var ESCAPE_STRING = {
-	TSV: function (v, quote) {return v.replace (/\\/g, '\\').replace(/\t/g, '\\t').replace(/\n/g, '\\n')},
-	CSV: function (v, quote) {return v.replace (/\"/g, '""')},
+       TSV: function (v, quote) {return doQuote(v.replace(/\\/g, '\\').replace(/\t/g, '\\t').replace(/\n/g, '\\n'), quote);},
+       CSV: function (v, quote) {return doQuote(v.replace(/\"/g, '""'), quote);},
+};
+
+function doQuote (v, quote) {
+       return quote ? "'" + v.replace(/'/g, '\\\'') + "'" : v;
 }
 
 var ESCAPE_NULL = {
@@ -78,7 +82,7 @@ function encodeValue (quote, v, format) {
 
 	switch (typeof v) {
 		case 'string':
-			return ESCAPE_STRING[format] ? ESCAPE_STRING[format] (v, quote) : v;
+			return v === ''? "''" : ESCAPE_STRING[format] ? ESCAPE_STRING[format] (v, quote) : v;
 		case 'number':
 			if (isNaN (v))
 				return 'nan';
@@ -95,7 +99,7 @@ function encodeValue (quote, v, format) {
 				return ("" + v.valueOf ()).substr (0, 10);
 			// you can add array items
 			if (v instanceof Array)
-				return '[' + v.map (encodeValue.bind (this, true, format)).join (',') + ']'
+                               return '[' + v.map(function (i) {return encodeValue(true, i, format)}).join(',') + ']';
 			// TODO: tuples support
 			if (!format) console.trace ();
 			if (v === null)
