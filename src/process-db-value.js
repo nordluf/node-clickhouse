@@ -61,7 +61,7 @@ var ALIASES = {
 }
 
 var ESCAPE_STRING = {
-       TSV: function (v, quote) {return doQuote(v.replace(/\\/g, '\\').replace(/\t/g, '\\t').replace(/\n/g, '\\n'), quote);},
+       TSV: function (v, quote) {return doQuote(v.replace(/\\/g, '\\\\').replace(/\t/g, '\\t').replace(/\n/g, '\\n'), quote);},
        CSV: function (v, quote) {return doQuote(v.replace(/\"/g, '""'), quote);},
 };
 
