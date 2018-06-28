@@ -82,7 +82,7 @@ function encodeValue (quote, v, format) {
 
 	switch (typeof v) {
 		case 'string':
-			return v === ''? "''" : ESCAPE_STRING[format] ? ESCAPE_STRING[format] (v, quote) : v;
+			return ESCAPE_STRING[format] ? ESCAPE_STRING[format] (v, quote) : v;
 		case 'number':
 			if (isNaN (v))
 				return 'nan';
